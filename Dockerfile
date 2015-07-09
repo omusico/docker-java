@@ -9,6 +9,7 @@ RUN curl -SL "https://downloads.php.net/~ab/php-$PHP_VERSION.tar.bz2" -o php.tar
 		&& tar -xof php.tar.bz2 -C /usr/src/php --strip-components=1 \
 		&& rm php.tar.bz2* \
 		&& cd /usr/src/php \
+		&& ./buildconf --force
 		&& ./configure \
 						--prefix=/usr/local/php \
 						--with-config-file-path=/usr/local/php/etc \
