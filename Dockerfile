@@ -5,11 +5,12 @@ RUN  yum install -y wget tar make gcc gcc-c++ autoconf libjpeg libjpeg-devel lib
 ENV PHP_VERSION 7.0.0beta1
 
 RUN curl -SL "https://downloads.php.net/~ab/php-$PHP_VERSION.tar.bz2" -o php.tar.bz2 \
+        && set -x \
         && mkdir -p /usr/src/php \
 		&& tar -xof php.tar.bz2 -C /usr/src/php --strip-components=1 \
 		&& rm php.tar.bz2* \
 		&& cd /usr/src/php \
-		&& ./buildconf --force
+		&& ./buildconf --force \
 		&& ./configure \
 						--prefix=/usr/local/php \
 						--with-config-file-path=/usr/local/php/etc \
@@ -60,10 +61,10 @@ RUN curl -SL "https://downloads.php.net/~ab/php-$PHP_VERSION.tar.bz2" -o php.tar
 						--with-pear \
 						--with-mysqli \
 						--disable-fileinfo \
-	&& make -j"$(nproc)" \
-	&& make install \
-	&& make clean \
-	&& yum clean all 
+	&&make -j"$(nproc)" \
+	&&make install \
+	&&make clean \
+	&&yum clean all 
 
 RUN  cp /usr/local/php/etc/php-fpm.conf.default /usr/local/php/etc/php-fpm.conf
 
