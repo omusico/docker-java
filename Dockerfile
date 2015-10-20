@@ -3,7 +3,7 @@ MAINTAINER omusico@omusico.net
 
 RUN  yum install -y wget tar make gcc gcc-c++ autoconf libjpeg libjpeg-devel libpng libpng-devel freetype freetype-devel libpng libpng-devel libxml2 libxml2-devel zlib zlib-devel glibc glibc-devel glib2 glib2-devel bzip2 bzip2-devel gd-devel openssl-devel curl bison libcurl-devel gmp-devel libmcrypt-devel readline-devel libxslt-devel httpd-devel
 
-ENV PHP_VERSION 7.0.0beta1
+ENV PHP_VERSION 7.0.0RC5
 
 RUN curl -SL "https://downloads.php.net/~ab/php-$PHP_VERSION.tar.bz2" -o php.tar.bz2 \
         && set -x \
