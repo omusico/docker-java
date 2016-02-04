@@ -1,78 +1,39 @@
-FROM fedora:21
+FROM fedora:22
 MAINTAINER omusico@omusico.net
 
-RUN  yum install -y wget tar make gcc gcc-c++ autoconf libjpeg libjpeg-devel libpng libpng-devel freetype freetype-devel libpng libpng-devel libxml2 libxml2-devel zlib zlib-devel glibc glibc-devel glib2 glib2-devel bzip2 bzip2-devel gd-devel openssl-devel curl bison libcurl-devel gmp-devel libmcrypt-devel readline-devel libxslt-devel httpd-devel
+#	 export JAVA_VERSION_MAJOR=7 &&\
+#	 export JAVA_VERSION_MINOR=79 &&\
+#	 export JAVA_VERSION_BUILD=15 &&\
 
-ENV PHP_VERSION 7.0.0RC5
+RUN      export JAVA_VERSION_MAJOR=8 &&\
+         export JAVA_VERSION_MINOR=71 &&\
+         export JAVA_VERSION_BUILD=15 &&\
+         export JAVA_PACKAGE=jdk &&\
+         dnf install -y tar unzip &&\
+         curl -jksSLH "Cookie: oraclelicense=accept-securebackup-cookie" \
+http://download.oracle.com/otn-pub/java/jdk/${JAVA_VERSION_MAJOR}u${JAVA_VERSION_MINOR}-b${JAVA_VERSION_BUILD}/${JAVA_PACKAGE}-${JAVA_VERSION_MAJOR}u${JAVA_VERSION_MINOR}-linux-x64.tar.gz \
+|gunzip -c -|tar -xf - -C /opt &&\
+         ln -s /opt/jdk1.${JAVA_VERSION_MAJOR}.0_${JAVA_VERSION_MINOR} /opt/jdk &&\
+         rm -rf /opt/jdk/*src.zip \
+         /opt/jdk/lib/missioncontrol \
+         /opt/jdk/lib/visualvm \
+         /opt/jdk/lib/*javafx* \
+         /opt/jdk/jre/lib/plugin.jar \
+         /opt/jdk/jre/lib/ext/jfxrt.jar \
+         /opt/jdk/jre/bin/javaws \
+         /opt/jdk/jre/lib/javaws.jar \
+         /opt/jdk/jre/lib/desktop \
+         /opt/jdk/jre/plugin \
+         /opt/jdk/jre/lib/deploy* \
+         /opt/jdk/jre/lib/*javafx* \
+         /opt/jdk/jre/lib/*jfx* \
+         /opt/jdk/jre/lib/amd64/libdecora_sse.so \
+         /opt/jdk/jre/lib/amd64/libprism_*.so \
+         /opt/jdk/jre/lib/amd64/libfxplugins.so \
+         /opt/jdk/jre/lib/amd64/libglass.so \
+         /opt/jdk/jre/lib/amd64/libgstreamer-lite.so \
+         /opt/jdk/jre/lib/amd64/libjavafx*.so \
+         /opt/jdk/jre/lib/amd64/libjfx*.so
 
-RUN curl -SL "https://downloads.php.net/~ab/php-$PHP_VERSION.tar.bz2" -o php.tar.bz2 \
-        && set -x \
-        && mkdir -p /usr/src/php \
-		&& tar -xof php.tar.bz2 -C /usr/src/php --strip-components=1 \
-		&& rm php.tar.bz2* \
-		&& cd /usr/src/php \
-		&& ./buildconf --force \
-		&& ./configure \
-						--prefix=/usr/local/php \
-						--with-config-file-path=/usr/local/php/etc \
-						--with-config-file-scan-dir=/usr/local/php/etc/conf.d \
-						--enable-fpm \
-						--enable-soap \
-						--with-openssl \
-						--with-mcrypt \
-						--with-pcre-regex \
-						--with-sqlite3 \
-						--with-zlib \
-						--enable-bcmath \
-						--with-iconv \
-						--with-bz2 \
-						--enable-calendar \
-						--with-curl \
-						--with-gd \
-						--with-openssl-dir \
-						--with-jpeg-dir \
-						--with-png-dir \
-						--with-freetype-dir \
-						--with-gettext \
-						--with-gmp \
-						--with-mhash \
-						--enable-json \
-						--enable-mbstring \
-						--disable-mbregex \
-						--disable-mbregex-backtrack \
-						--with-libmbfl \
-						--with-onig \
-						--enable-pdo \
-						--with-pdo-mysql \
-						--with-zlib-dir \
-						--with-pdo-sqlite \
-						--with-readline \
-						--enable-session \
-						--enable-shmop \
-						--enable-simplexml \
-						--enable-sockets \
-						--enable-sysvmsg \
-						--enable-sysvsem \
-						--enable-sysvshm \
-						--enable-wddx \
-						--with-libxml-dir \
-						--with-xsl \
-						--enable-zip \
-						--enable-mysqlnd-compression-support \
-						--with-pear \
-						--with-mysqli \
-						--disable-fileinfo \
-	&&make -j"$(nproc)" \
-	&&make install \
-	&&yum remove -y libjpeg-devel libpng-devel freetype-devel libpng-devel libxml2-devel zlib-devel glibc-devel glib2-devel bzip2-devel gd-devel openssl-devel libcurl-devel gmp-devel libmcrypt-devel readline-devel libxslt-devel httpd-devel
-	&&make clean \
-	&&yum clean all 
-
-RUN  cp /usr/local/php/etc/php-fpm.conf.default /usr/local/php/etc/php-fpm.conf
-
-COPY httpd-php.conf /etc/httpd/conf.d/
-COPY www.conf  /usr/local/php/etc/php-fpm.d/
-
-EXPOSE 80
-
-CMD ["/usr/sbin/httpd", "-D", "FOREGROUND"]
+ENV JAVA_HOME /opt/jdk
+ENV PATH ${PATH}:${JAVA_HOME}/bin
